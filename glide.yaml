@@ -1,0 +1,14 @@
+package: github.com/ghongli/cache
+license: MIT
+owners:
+- name: saltsam.steve
+  email:
+  homepage:
+ignore:
+- appengine
+excludeDirs:
+- node_modules
+- vendor
+import:
+- package: github.com/go-redis/redis
+  version: ^6.2.5
