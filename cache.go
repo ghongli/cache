@@ -1,8 +1,22 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"time"
+)
+
+const (
+	EXPIRES_DEFAULT = time.Duration(0)
+	EXPIRES_FOREVER = time.Duration(-1)
+)
+
+var (
+	ErrCacheMiss                             = errors.New("Key not found")
+	ErrCacheNotStored                        = errors.New("Data not stored")
+	ErrCacheNotSupported                     = errors.New("Operation not supported")
+	ErrCacheDataCannotBeIncreasedOrDecreased = errors.New(`
+		Data isn't an integer/string type, it cannot be increased or decreased`)
 )
 
 // a cached piece of data
