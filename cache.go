@@ -21,8 +21,18 @@ var (
 
 // a cached piece of data
 type CacheItem struct {
-	Expired time.Duration
-	Data    []byte
+	CreatedTime time.Time
+	Data        []byte
+	Expired     time.Duration
+}
+
+func (ci *CacheItem) IsExpired() bool {
+	// 0 means forever
+	if ci.Expired == 0 {
+		return false
+	}
+
+	return time.Now().Sub(ci.CreatedTime) > ci.Expired
 }
 
 // Cache interface contains all behaviors for cache adapter.
@@ -44,8 +54,8 @@ type Cache interface {
 // Caches that have to manually clear out the cached data should implement this method.
 // start trash gc routine based on config string settings.
 type GarbageCollector interface {
-	StartAndTrashGc(config string) error
-	//TrashGc(interval time.Duration)
+	//StartAndTrashGc(config string) error
+	TrashGc(interval time.Duration)
 }
 
 // Store is a function create a new Cache Instance
