@@ -135,3 +135,9 @@ func (m *Cache) TrashGc(gcInterval time.Duration) {
 		m.TrashGc(gcInterval)
 	})
 }
+
+func init() {
+	cache.Register("memory", func() cache.Cache {
+		return NewMemoryStore(time.Second * 1)
+	})
+}
