@@ -27,9 +27,14 @@ type CacheItem struct {
 }
 
 func (ci *CacheItem) IsExpired() bool {
-	// 0 means forever
-	if ci.Expired == 0 {
+	// -1 means forever
+	if ci.Expired == EXPIRES_FOREVER {
 		return false
+	}
+
+	// 0 means expired
+	if ci.Expired == EXPIRES_DEFAULT {
+		return true
 	}
 
 	return time.Now().Sub(ci.CreatedTime) > ci.Expired
