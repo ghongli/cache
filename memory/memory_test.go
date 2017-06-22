@@ -19,7 +19,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	memoryStore = NewMemoryStore(1 * time.Second)
+	memoryStore = NewMemoryStore(1*time.Second, nil)
 
 	flag.Parse()
 	os.Exit(m.Run())
@@ -115,7 +115,7 @@ func TestCache_Delete(t *testing.T) {
 
 	_, err = memoryStore.Get(key)
 	if err != cache.ErrCacheMiss {
-		t.Fatalf(`Expected an error of %v \n Got %v`, err)
+		t.Fatalf(`Expected an error of %v \n Got %v`, cache.ErrCacheMiss, err)
 	}
 
 	err = memoryStore.Delete("unknown")
@@ -145,7 +145,7 @@ func TestCache_ClearAll(t *testing.T) {
 
 func TestCache_TrashGc(t *testing.T) {
 	// Set garbage collection interval to every 5 second
-	store := NewMemoryStore(time.Second * 5)
+	store := NewMemoryStore(time.Second*5, nil)
 
 	tests := []struct {
 		key, value string
@@ -160,7 +160,7 @@ func TestCache_TrashGc(t *testing.T) {
 		store.Put(v.key, []byte(v.value), v.expires)
 	}
 
-	// 
+	//
 	time.Sleep(time.Second * 6)
 
 	expectedNumOfItemsInCache := 0

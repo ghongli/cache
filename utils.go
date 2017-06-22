@@ -25,8 +25,8 @@ func (sh *SerializeHelper) Serialized(i interface{}) ([]byte, error) {
 		return sh, nil
 	}
 
-	var buffer bytes.Buffer
-	enc := gob.NewEncoder(&buffer)
+	buffer := bytes.NewBuffer(nil)
+	enc := gob.NewEncoder(buffer)
 	if err := enc.Encode(i); err != nil {
 		return nil, err
 	}

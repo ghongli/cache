@@ -27,9 +27,14 @@ type CacheItem struct {
 }
 
 func (ci *CacheItem) IsExpired() bool {
-	// 0 means forever
-	if ci.Expired == 0 {
+	// -1 means forever
+	if ci.Expired == EXPIRES_FOREVER {
 		return false
+	}
+
+	// 0 means expired
+	if ci.Expired == EXPIRES_DEFAULT {
+		return true
 	}
 
 	return time.Now().Sub(ci.CreatedTime) > ci.Expired
@@ -79,9 +84,8 @@ func Register(name string, adapter Store) {
 }
 
 // NewCache Create a new cache driver by adapter name and config string.
-// config need to be correct JSON as string: {"interval":360}.
 // it will start gc automatically.
-func NewCache(adapterName, config string) (cache Cache, err error) {
+func NewCache(adapterName string) (cache Cache, err error) {
 	storeFunc, ok := adapters[adapterName]
 	if !ok {
 		err = fmt.Errorf("cache: unknown adapter name %q (forgot to import?)", adapterName)
