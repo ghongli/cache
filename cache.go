@@ -76,7 +76,7 @@ func Register(name string, adapter Store) {
 		panic("cache: Register adapter is nil")
 	}
 
-	if _, ok := adapters[name]; !ok {
+	if _, ok := adapters[name]; ok {
 		panic("cache: Register called twice for adapter " + name)
 	}
 
