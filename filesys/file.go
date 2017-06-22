@@ -18,16 +18,34 @@ const (
 	defaultDirectoryFilePerm             = 0755
 )
 
+var (
+	FileCachePath   = "cache"     // cache directory
+	FileCacheExpire time.Duration // cache expire time, default is no expire forever.
+)
+
 // a cache for file storage.
 type Cache struct {
 	baseDir string
 	s       cache.Serializer
 }
 
+// newFileCache Create new file cache with no config.
+// need set in method StartCache as config string.
+func newFileCache() cache.Cache {
+	return &Cache{}
+}
+
+// startCache will start and begin gc for file cache.
+// the config need to be like {"expire":0,"baseDir":"/cache","serializer":}
+func (f *Cache) startCache(config string) error {
+	// todo impl
+	return nil
+}
+
 // MustNewFileSysStore an initialized Filesystem Cache
 // If a non-existent directory is passed, it would be created automatically.
 // Panics if the directory could not be created
-func MustNewFileSysStore(baseDir string, interval time.Duration) *Cache {
+func MustNewFileSysStore(baseDir string, interval time.Duration, serializer cache.Serializer) *Cache {
 	_, err := os.Stat(baseDir)
 	if err != nil {
 		// Directory baseDir does not exist, create it
@@ -38,6 +56,10 @@ func MustNewFileSysStore(baseDir string, interval time.Duration) *Cache {
 	}
 
 	fs := &Cache{baseDir: baseDir, s: cache.NewCacheSerializer()}
+
+	if serializer != nil {
+		fs.s = serializer
+	}
 
 	fs.TrashGc(interval)
 
@@ -187,4 +209,10 @@ func exists(path string) (bool, error) {
 
 func createDirectory(dir string) error {
 	return os.MkdirAll(dir, defaultDirectoryFilePerm)
+}
+
+func init() {
+	cache.Register("file", func() cache.Cache {
+		return MustNewFileSysStore(FileCachePath, time.Minute*1, nil)
+	})
 }

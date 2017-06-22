@@ -20,10 +20,14 @@ type Cache struct {
 	s     cache.Serializer
 }
 
-func NewMemoryStore(gcInterval time.Duration) *Cache {
+func NewMemoryStore(gcInterval time.Duration, serializer cache.Serializer) *Cache {
 	m := &Cache{
 		items: make(map[string][]byte),
 		s:     cache.NewCacheSerializer(),
+	}
+
+	if serializer != nil {
+		m.s = serializer
 	}
 
 	m.TrashGc(gcInterval)
@@ -138,6 +142,6 @@ func (m *Cache) TrashGc(gcInterval time.Duration) {
 
 func init() {
 	cache.Register("memory", func() cache.Cache {
-		return NewMemoryStore(time.Second * 1)
+		return NewMemoryStore(time.Second*1, nil)
 	})
 }

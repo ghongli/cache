@@ -2,8 +2,6 @@ package: github.com/ghongli/cache
 license: MIT
 owners:
 - name: saltsam.steve
-  email:
-  homepage:
 ignore:
 - appengine
 excludeDirs:
@@ -12,3 +10,4 @@ excludeDirs:
 import:
 - package: github.com/go-redis/redis
   version: ^6.2.5
+- package: github.com/bradfitz/gomemcache

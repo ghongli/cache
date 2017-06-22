@@ -14,14 +14,14 @@ import (
 )
 
 var (
-	_          cache.Cache = MustNewFileSysStore("./../tmp", time.Second)
+	_          cache.Cache = MustNewFileSysStore("./../tmp", time.Second, nil)
 	fileCache  *Cache
 	sampleData = []byte("file store")
 	key        = "file_sys"
 )
 
 func TestMain(t *testing.M) {
-	fileCache = MustNewFileSysStore("./../tmp/cache", time.Second*1)
+	fileCache = MustNewFileSysStore("./../tmp/cache", time.Second*1, nil)
 
 	flag.Parse()
 	os.Exit(t.Run())
@@ -32,7 +32,7 @@ func TestMustNewFileSysStore(t *testing.T) {
 		recover()
 	}()
 
-	_ = MustNewFileSysStore("/hh", time.Second*1)
+	_ = MustNewFileSysStore("/hh", time.Second*1, nil)
 }
 
 func TestCache_Put(t *testing.T) {
@@ -148,7 +148,7 @@ func TestCache_PutFailsAnUnwriteableDirectory(t *testing.T) {
 }
 
 func TestCache_TrashGc2(t *testing.T) {
-	store := MustNewFileSysStore("./../tmp/cache", time.Second*1)
+	store := MustNewFileSysStore("./../tmp/cache", time.Second*1, nil)
 
 	tests := []struct {
 		key, value string
