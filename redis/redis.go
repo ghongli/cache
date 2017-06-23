@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ghongli/cache"
 	"github.com/go-redis/redis"
 )
 
@@ -63,4 +64,14 @@ func (r *Cache) ClearAll() error {
 
 func (r *Cache) key(key string) string {
 	return fmt.Sprint(r.prefix, key)
+}
+
+func init() {
+	cache.Register("redis", func() cache.Cache {
+		return NewRedisCache(&redis.Options{
+			Addr:     "127.0.0.1:6379",
+			Password: "",
+			DB:       0,
+		}, PREFIX)
+	})
 }

@@ -21,8 +21,23 @@ var (
 
 // a cached piece of data
 type CacheItem struct {
-	Expired time.Duration
-	Data    []byte
+	CreatedTime time.Time
+	Data        []byte
+	Expired     time.Duration
+}
+
+func (ci *CacheItem) IsExpired() bool {
+	// -1 means forever
+	if ci.Expired == EXPIRES_FOREVER {
+		return false
+	}
+
+	// 0 means expired
+	if ci.Expired == EXPIRES_DEFAULT {
+		return true
+	}
+
+	return time.Now().Sub(ci.CreatedTime) > ci.Expired
 }
 
 // Cache interface contains all behaviors for cache adapter.
@@ -44,8 +59,8 @@ type Cache interface {
 // Caches that have to manually clear out the cached data should implement this method.
 // start trash gc routine based on config string settings.
 type GarbageCollector interface {
-	StartAndTrashGc(config string) error
-	//TrashGc(interval time.Duration)
+	//StartAndTrashGc(config string) error
+	TrashGc(interval time.Duration)
 }
 
 // Store is a function create a new Cache Instance
@@ -61,7 +76,7 @@ func Register(name string, adapter Store) {
 		panic("cache: Register adapter is nil")
 	}
 
-	if _, ok := adapters[name]; !ok {
+	if _, ok := adapters[name]; ok {
 		panic("cache: Register called twice for adapter " + name)
 	}
 
@@ -69,9 +84,8 @@ func Register(name string, adapter Store) {
 }
 
 // NewCache Create a new cache driver by adapter name and config string.
-// config need to be correct JSON as string: {"interval":360}.
 // it will start gc automatically.
-func NewCache(adapterName, config string) (cache Cache, err error) {
+func NewCache(adapterName string) (cache Cache, err error) {
 	storeFunc, ok := adapters[adapterName]
 	if !ok {
 		err = fmt.Errorf("cache: unknown adapter name %q (forgot to import?)", adapterName)
